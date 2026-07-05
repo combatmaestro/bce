@@ -6,7 +6,8 @@ const state = {
   waitlist: [],
   users: [],
   filters: { search: '', category: '', date: '', price: '' },
-  editingEventId: null
+  editingEventId: null,
+  activeAdminSection: 'overview'
 };
 
 async function loadData() {
@@ -53,6 +54,28 @@ async function persistData() {
   window.localStorage.setItem('bceData', JSON.stringify(payload));
 }
 
+function setActiveAdminSection(section, updateHash = true) {
+  const validSections = ['overview', 'events', 'event-form', 'users', 'venues', 'reports'];
+  const nextSection = validSections.includes(section) ? section : 'overview';
+  state.activeAdminSection = nextSection;
+
+  document.querySelectorAll('.admin-panel').forEach(panel => {
+    const isActive = panel.dataset.section === nextSection;
+    panel.classList.toggle('active', isActive);
+    panel.classList.toggle('d-none', !isActive);
+  });
+
+  document.querySelectorAll('.admin-nav-link').forEach(link => {
+    const isActive = link.dataset.section === nextSection;
+    link.classList.toggle('active', isActive);
+    link.classList.toggle('list-group-item-primary', isActive);
+  });
+
+  if (updateHash && window.location.hash !== `#${nextSection}`) {
+    window.location.hash = nextSection;
+  }
+}
+
 function render() {
   const app = document.getElementById('app');
   if (!state.user) {
@@ -86,9 +109,18 @@ function handleRoute() {
   }
 
   if (state.user.role === 'admin') {
-    if (hash && hash !== 'admin') {
-      window.location.hash = 'admin';
+    const adminSections = ['overview', 'events', 'event-form', 'users', 'venues', 'reports'];
+    if (hash && adminSections.includes(hash)) {
+      setActiveAdminSection(hash, false);
+      return;
     }
+
+    if (!hash || hash === 'admin') {
+      setActiveAdminSection(state.activeAdminSection || 'overview', false);
+      return;
+    }
+
+    window.location.hash = state.activeAdminSection || 'overview';
     return;
   }
 
@@ -249,12 +281,12 @@ function renderAdmin() {
           <div class="card-box sticky-top" style="top:100px;">
             <h5 class="fw-bold mb-3">Admin controls</h5>
             <div class="list-group">
-              <a class="list-group-item list-group-item-action" href="#adminOverview">Overview</a>
-              <a class="list-group-item list-group-item-action" href="#adminEventList">All events</a>
-              <a class="list-group-item list-group-item-action" href="#adminEventForm">Add / update event</a>
-              <a class="list-group-item list-group-item-action" href="#adminUsersSection">Users</a>
-              <a class="list-group-item list-group-item-action" href="#adminVenuesSection">Venues</a>
-              <a class="list-group-item list-group-item-action" href="#adminReportsSection">Reports</a>
+              <a class="list-group-item list-group-item-action admin-nav-link" data-section="overview" href="#overview">Overview</a>
+              <a class="list-group-item list-group-item-action admin-nav-link" data-section="events" href="#events">All events</a>
+              <a class="list-group-item list-group-item-action admin-nav-link" data-section="event-form" href="#event-form">Add / update event</a>
+              <a class="list-group-item list-group-item-action admin-nav-link" data-section="users" href="#users">Users</a>
+              <a class="list-group-item list-group-item-action admin-nav-link" data-section="venues" href="#venues">Venues</a>
+              <a class="list-group-item list-group-item-action admin-nav-link" data-section="reports" href="#reports">Reports</a>
             </div>
             <div class="mt-4">
               <h6 class="fw-semibold">Necessary event fields</h6>
@@ -273,27 +305,27 @@ function renderAdmin() {
           </div>
         </div>
         <div class="col-lg-9">
-          <div class="card-box mb-4" id="adminOverview">
+          <div class="card-box mb-4 admin-panel active" data-section="overview" id="adminOverview">
             <h4 class="fw-bold mb-3">Admin dashboard</h4>
             <p class="text-muted">Use the sidebar to jump between event management, users, venues and reports. Edit an event from the list and save it in the form below.</p>
           </div>
-          <div class="card-box mb-4" id="adminEventList">
+          <div class="card-box mb-4 admin-panel d-none" data-section="events" id="adminEventList">
             <h4 class="fw-bold mb-3">All events</h4>
             <div id="adminEvents"></div>
           </div>
-          <div class="card-box mb-4" id="adminEventEditor">
+          <div class="card-box mb-4 admin-panel d-none" data-section="event-form" id="adminEventEditor">
             <h4 class="fw-bold mb-3">Add / update event</h4>
             <div id="adminEventFormArea"></div>
           </div>
-          <div class="card-box mb-4" id="adminUsersSection">
+          <div class="card-box mb-4 admin-panel d-none" data-section="users" id="adminUsersSection">
             <h4 class="fw-bold mb-3">Manage users</h4>
             <div id="adminUsers"></div>
           </div>
-          <div class="card-box mb-4" id="adminVenuesSection">
+          <div class="card-box mb-4 admin-panel d-none" data-section="venues" id="adminVenuesSection">
             <h4 class="fw-bold mb-3">Add venue</h4>
             <div id="venueForm"></div>
           </div>
-          <div class="card-box mb-4" id="adminReportsSection">
+          <div class="card-box mb-4 admin-panel d-none" data-section="reports" id="adminReportsSection">
             <h4 class="fw-bold mb-3">Reports & admin tools</h4>
             <div id="adminReports"></div>
           </div>
@@ -340,7 +372,11 @@ function bindEvents() {
     state.filters.price = document.getElementById('priceFilter')?.value || '';
     filterAndRenderEvents();
   });
-  if (logoutBtn) logoutBtn.addEventListener('click', () => { state.user = null; render(); });
+  if (logoutBtn) logoutBtn.addEventListener('click', async () => {
+    state.user = null;
+    await persistData();
+    render();
+  });
 
   if (state.user) {
     if (state.user.role === 'standard') {
@@ -454,23 +490,32 @@ function filterAndRenderEvents() {
 
   const eventCards = document.getElementById('eventCards');
   if (eventCards) {
-    eventCards.innerHTML = filtered.length ? filtered.map(event => `
-      <div class="col-lg-4">
-        <div class="event-card">
-          <h5 class="fw-bold">${event.title}</h5>
-          <p class="text-muted mb-2"><i class="fa-solid fa-calendar me-2"></i>${event.date}</p>
-          <p class="text-muted mb-2"><i class="fa-solid fa-location-dot me-2"></i>${getVenueName(event.venueId)}</p>
-          <p class="text-muted mb-2"><i class="fa-solid fa-tag me-2"></i>${event.category}</p>
-          <p class="text-muted mb-2"><i class="fa-solid fa-ticket-simple me-2"></i>£${event.price}</p>
-          <p class="mb-3">${event.description}</p>
-          <p class="small text-muted">Remaining: ${Math.max(event.capacity - event.booked, 0)}</p>
-          <div class="d-flex gap-2">
-            <button class="btn btn-outline-warning viewBtn" data-event-id="${event.id}">View details</button>
-            <button class="btn btn-warning bookBtn" data-event-id="${event.id}">Book now</button>
+    eventCards.innerHTML = filtered.length ? filtered.map(event => {
+      const metaItems = [
+        event.date ? { icon: 'calendar', text: event.date } : null,
+        getVenueName(event.venueId) ? { icon: 'location-dot', text: getVenueName(event.venueId) } : null,
+        event.category ? { icon: 'tag', text: event.category } : null,
+        event.price !== undefined ? { icon: 'ticket-simple', text: `£${event.price}` } : null
+      ].filter(Boolean);
+      const description = event.description && event.description.trim() ? `<p class="mb-2">${event.description}</p>` : '';
+      const remainingText = `<p class="small text-muted mb-0">Remaining: ${Math.max(event.capacity - event.booked, 0)}</p>`;
+      const hasExtraContent = metaItems.length > 0 || description || event.capacity;
+
+      return `
+        <div class="col-lg-4">
+          <div class="event-card${hasExtraContent ? '' : ' compact'}">
+            <h5 class="fw-bold mb-1">${event.title}</h5>
+            ${metaItems.map(item => `<p class="text-muted mb-1 small"><i class="fa-solid fa-${item.icon} me-2"></i>${item.text}</p>`).join('')}
+            ${description}
+            ${hasExtraContent ? remainingText : ''}
+            <div class="d-flex gap-2 mt-2">
+              <button class="btn btn-outline-warning viewBtn" data-event-id="${event.id}">View details</button>
+              <button class="btn btn-warning bookBtn" data-event-id="${event.id}">Book now</button>
+            </div>
           </div>
         </div>
-      </div>
-    `).join('') : '<div class="col-12"><div class="alert alert-light">No events match your filters.</div></div>';
+      `;
+    }).join('') : '<div class="col-12"><div class="alert alert-light py-2 px-3 mb-0">No events match your filters.</div></div>';
   }
 
   document.querySelectorAll('.viewBtn').forEach(btn => btn.addEventListener('click', () => viewEventDetails(btn.dataset.eventId)));
@@ -745,13 +790,22 @@ async function cancelBooking(bookingId) {
 }
 
 function renderAdminDashboards() {
+  document.querySelectorAll('.admin-nav-link').forEach(link => {
+    link.addEventListener('click', event => {
+      event.preventDefault();
+      setActiveAdminSection(link.dataset.section, true);
+    });
+  });
+
+  setActiveAdminSection(state.activeAdminSection || 'overview', false);
+
   const adminEvents = document.getElementById('adminEvents');
   if (adminEvents) {
     adminEvents.innerHTML = state.events.map(event => `
       <div class="border rounded p-3 mb-3">
-        <h6 class="fw-bold">${event.title}</h6>
-        <p class="mb-1">Booked: ${event.booked}/${event.capacity}</p>
-        <p class="mb-1">Revenue: £${(event.booked * event.price).toFixed(2)}</p>
+        <h6 class="fw-bold mb-1">${event.title}</h6>
+        <p class="mb-1 small">Booked: ${event.booked}/${event.capacity}</p>
+        <p class="mb-1 small">Revenue: £${(event.booked * event.price).toFixed(2)}</p>
         <div class="d-flex gap-2 mt-2">
           <button class="btn btn-outline-warning btn-sm" data-edit-event="${event.id}">Edit</button>
           <button class="btn btn-outline-danger btn-sm" data-remove-event="${event.id}">Remove</button>
@@ -810,9 +864,11 @@ function renderAdminDashboards() {
     adminUsers.innerHTML = state.users.map(user => `
       <div class="border rounded p-3 mb-3">
         <h6 class="fw-bold mb-1">${user.name}</h6>
-        <p class="mb-1">${user.email} • ${user.role}</p>
-        <button class="btn btn-outline-secondary btn-sm me-2" data-reset-password="${user.id}">Reset password</button>
-        <button class="btn btn-outline-danger btn-sm" data-remove-user="${user.id}">Remove</button>
+        <p class="mb-1 small">${user.email} • ${user.role}</p>
+        <div class="d-flex gap-2 mt-2">
+          <button class="btn btn-outline-secondary btn-sm" data-reset-password="${user.id}">Reset password</button>
+          <button class="btn btn-outline-danger btn-sm" data-remove-user="${user.id}">Remove</button>
+        </div>
       </div>
     `).join('');
     document.querySelectorAll('[data-reset-password]').forEach(btn => btn.addEventListener('click', () => resetUserPassword(btn.dataset.resetPassword)));
