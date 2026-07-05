@@ -1,0 +1,21 @@
+Bristol Community Events - Run Instructions
+
+1. Open a terminal or command prompt.
+2. Change directory to the StudentAssignment folder:
+   cd "/Users/adarsh.sahu/Desktop/Github Adarsh/RealEstateWeb/StudentAssignment"
+3. Start a local server:
+   python3 -m http.server 5500
+4. Open your browser and navigate to:
+   http://127.0.0.1:5500/StudentAssignment/
+
+Demo login credentials:
+- Admin: admin@bce.co.uk / admin123
+- Admin: emma.admin@bce.co.uk / admin456
+- Organiser: maya@bce.co.uk / organiser123
+- Organiser: noah.organiser@bce.co.uk / organiser456
+- User: sam@example.com / student123
+- User: leah@example.com / pass1234
+
+Important:
+- The app uses `data.json` as a local data source.
+- Page refresh resets changes made during the session.

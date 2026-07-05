@@ -1,0 +1,12 @@
+{
+  "name": "bristol-community-events",
+  "version": "1.0.0",
+  "description": "Backend server for Bristol Community Events SPA with JSON persistence",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.4"
+  }
+}

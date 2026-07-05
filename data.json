@@ -1,0 +1,31 @@
+{
+  "users": [
+    {"id": "u1", "name": "Admin User", "email": "admin@bce.co.uk", "password": "admin123", "role": "admin"},
+    {"id": "u2", "name": "Emma Admin", "email": "emma.admin@bce.co.uk", "password": "admin456", "role": "admin"},
+    {"id": "u3", "name": "Maya Organiser", "email": "maya@bce.co.uk", "password": "organiser123", "role": "organiser"},
+    {"id": "u4", "name": "Noah Organiser", "email": "noah.organiser@bce.co.uk", "password": "organiser456", "role": "organiser"},
+    {"id": "u5", "name": "Sam Carter", "email": "sam@example.com", "password": "student123", "role": "standard"},
+    {"id": "u6", "name": "Leah Brown", "email": "leah@example.com", "password": "pass1234", "role": "standard"}
+  ],
+  "venues": [
+    {"id": "v1", "name": "Ashton Gate Stadium", "capacity": 150, "suitableFor": "Musical, Sports, Exhibitions"},
+    {"id": "v2", "name": "Arnolfini", "capacity": 100, "suitableFor": "Exhibitions, Workshops"},
+    {"id": "v3", "name": "The Bristol Hippodrome", "capacity": 120, "suitableFor": "Theatre, Musical"},
+    {"id": "v4", "name": "Bristol Central Library", "capacity": 50, "suitableFor": "Library Exhibitions"},
+    {"id": "v5", "name": "Creative Space A", "capacity": 30, "suitableFor": "Workshops"},
+    {"id": "v6", "name": "Community Centre A", "capacity": 60, "suitableFor": "Private Events, Religious Events"}
+  ],
+  "events": [
+    {"id": "e1", "title": "Harbour Lights Festival", "category": "Music", "date": "2026-08-18", "price": 35, "venueId": "v1", "capacity": 150, "booked": 70, "description": "A vibrant evening of music, food and entertainment welcome visitors from across the region.", "conditions": "No alcohol outside the venue. Early arrival recommended.", "lastBookingDate": "2026-08-10", "multiDay": false, "status": "published", "organiserId": "u2"},
+    {"id": "e2", "title": "City Design Workshop", "category": "Workshop", "date": "2026-08-22", "price": 0, "venueId": "v2", "capacity": 80, "booked": 15, "description": "A creative workshop for students and professionals exploring future city design.", "conditions": "Please bring a notebook and ID for check-in.", "lastBookingDate": "2026-08-15", "multiDay": false, "status": "published", "organiserId": "u2"},
+    {"id": "e3", "title": "River Run Challenge", "category": "Sports", "date": "2026-08-30", "price": 20, "venueId": "v1", "capacity": 200, "booked": 180, "description": "A lively community run encouraging health, movement and local participation.", "conditions": "Comfortable trainers required.", "lastBookingDate": "2026-08-20", "multiDay": false, "status": "published", "organiserId": "u2"},
+    {"id": "e4", "title": "Bristol Balloon Fiesta", "category": "Exhibition", "date": "2026-08-10", "price": 70, "venueId": "v6", "capacity": 500, "booked": 120, "description": "A multi-day celebration with rides, live entertainment and family-friendly attractions.", "conditions": "Suitable for all ages. Tickets can be used for one or more days.", "lastBookingDate": "2026-08-01", "multiDay": true, "days": 7, "status": "published", "organiserId": "u2"},
+    {"id": "e5", "title": "Temple Community Gathering", "category": "Religious", "date": "2026-09-05", "price": 0, "venueId": "v6", "capacity": 60, "booked": 22, "description": "A welcoming gathering for community prayers, talks and shared meals.", "conditions": "Respectful dress requested.", "lastBookingDate": "2026-08-28", "multiDay": false, "status": "published", "organiserId": "u2"},
+    {"id": "e6", "title": "Bristol Museum Exhibition", "category": "Exhibition", "date": "2026-07-12", "price": 10, "venueId": "v4", "capacity": 90, "booked": 90, "description": "A curated exhibition of Bristol history, photography and digital art.", "conditions": "Advance booking strongly recommended.", "lastBookingDate": "2026-07-05", "multiDay": false, "status": "published", "organiserId": "u2"}
+  ],
+  "bookings": [
+    {"id": "b1", "eventId": "e1", "userId": "u3", "quantity": 2, "daysBooked": 1, "total": 70, "status": "confirmed", "bookedAt": "2026-06-10", "receiptNo": "REC-1001"},
+    {"id": "b2", "eventId": "e2", "userId": "u4", "quantity": 1, "daysBooked": 1, "total": 0, "status": "confirmed", "bookedAt": "2026-06-12", "receiptNo": "REC-1002"}
+  ],
+  "waitlist": []
+}

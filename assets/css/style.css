@@ -1,0 +1,111 @@
+:root {
+  --primary: #ffb703;
+  --primary-dark: #f59e0b;
+  --dark: #0f172a;
+  --muted: #64748b;
+  --light: #f8fafc;
+  --card: #ffffff;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+  color: var(--dark);
+}
+
+.navbar {
+  background: rgba(15, 23, 42, 0.86);
+  backdrop-filter: blur(10px);
+}
+
+.navbar-brand {
+  color: white !important;
+  font-weight: 700;
+  font-size: 28px;
+}
+
+.navbar-nav .nav-link {
+  color: white !important;
+  margin-left: 18px;
+  transition: 0.3s;
+}
+
+.navbar-nav .nav-link:hover {
+  color: var(--primary) !important;
+}
+
+.hero-small {
+  background: linear-gradient(90deg, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.55)),
+    url('https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1600&q=80');
+  background-size: cover;
+  background-position: center;
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  color: white;
+  padding-top: 90px;
+  margin-bottom: 40px;
+}
+
+.section-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--dark);
+}
+
+.section-subtitle {
+  color: var(--muted);
+  max-width: 720px;
+  margin-bottom: 24px;
+}
+
+.card-box, .event-card, .info-card, .contact-card {
+  background: var(--card);
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  height: 100%;
+}
+
+.icon-box {
+  font-size: 1.4rem;
+  color: var(--primary-dark);
+  background: #fff7e6;
+  width: 46px;
+  height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin-bottom: 12px;
+}
+
+.btn-warning {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+.btn-warning:hover {
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+.form-control, .form-select {
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+footer {
+  background: #0f172a;
+  color: #cbd5e1;
+  padding: 30px 0;
+  margin-top: 50px;
+}
